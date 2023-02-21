@@ -11,9 +11,12 @@ namespace westcoast_cars.api.Controllers
     public class VehiclesController : ControllerBase
     {
         private readonly WestcoastCarsContext _context;
-        public VehiclesController(WestcoastCarsContext context)
+        private readonly string _imageBaseUrl;
+
+        public VehiclesController(WestcoastCarsContext context, IConfiguration config)
         {
             _context = context;
+            _imageBaseUrl = config.GetSection("apiImageUrl").Value;
         }
 
         [HttpGet()]
@@ -26,7 +29,7 @@ namespace westcoast_cars.api.Controllers
                     Name = $"{v.Manufacturer.Name} {v.Model}",
                     ModelYear = v.ModelYear,
                     Mileage = v.Mileage,
-                    ImageUrl = v.ImageUrl
+                    ImageUrl = _imageBaseUrl + v.ImageUrl ?? "no-car.png"
                 })
                 .ToListAsync();
 
@@ -48,7 +51,7 @@ namespace westcoast_cars.api.Controllers
                     Mileage = v.Mileage,
                     Fueltype = v.FuelType.Name,
                     Transmission = v.TransmissionsType.Name,
-                    ImageUrl = v.ImageUrl
+                    ImageUrl = _imageBaseUrl + v.ImageUrl ?? "no-car.png"
                 })
                 .SingleOrDefaultAsync(c => c.Id == id);
 
@@ -70,7 +73,7 @@ namespace westcoast_cars.api.Controllers
                     Mileage = v.Mileage,
                     Fueltype = v.FuelType.Name,
                     Transmission = v.TransmissionsType.Name,
-                    ImageUrl = v.ImageUrl
+                    ImageUrl = _imageBaseUrl + v.ImageUrl ?? "no-car.png"
                 })
                 .SingleOrDefaultAsync(c => c.RegistrationNumber == regNo);
 
